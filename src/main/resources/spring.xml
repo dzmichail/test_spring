@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context"
+
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="
+ 		http://www.springframework.org/schema/beans
+ 		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.2.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-util-3.2.xsd">
+
+    <!-- тут возникают экзепшены при запуске  -->
+    <!-- Exception in thread "main" org.springframework.beans.factory.xml.XmlBeanDefinitionStoreException: Line 18 in XML document from class path resource [spring.xml] is invalid; nested exception is org.xml.sax.SAXParseException; lineNumber: 18; columnNumber: 33; cvc-complex-type.2.4.c: The matching wildcard is strict, but no declaration can be found for element 'context:annotation-config'.
+ -->
+    <!--<context:annotation-config/>-->
+    <!--<context:component-scan base-package="myapp"/>-->
+
+    <import resource="loggers.xml"/>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location">
+            <value>classpath:client.properties</value>
+        </property>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+    </bean>
+
+    <bean id="client" class="myapp.Client" p:greeting="${greeting}">
+        <!--<constructor-arg name="id"  type="java.lang.String"></constructor-arg>-->
+        <!--<constructor-arg name="fullName" type="java.lang.String"></constructor-arg>-->
+        <!--<constructor-arg  type="java.lang.String"  value="2" />-->
+        <!--<constructor-arg type="java.lang.String" value="John Smith"/>-->
+        <constructor-arg value="${id}" />
+        <constructor-arg value="${fullName}" />
+        <!--<property name="greeting" value="${greeting}"/>-->
+    </bean>
+
+
+    <bean id="app" class="myapp.App">
+        <constructor-arg ref="client"> </constructor-arg>
+        <constructor-arg ref="fileEventLogger"> </constructor-arg>
+    </bean>
+
+    <bean id="event" class="myapp.Event" scope="prototype">
+        <constructor-arg>
+            <bean class="java.util.Date"/>
+        </constructor-arg>
+        <constructor-arg ref="dateFormat"/>
+    </bean>
+
+    <bean id="dateFormat" class="java.text.DateFormat" factory-method="getDateTimeInstance" />
+
+    <!--<bean id="eventLogger" class="myapp.ConsoleEventLogger" />-->
+
+    <!--<bean id="fileEventLogger" class="myapp.FileEventLogger" init-method="init">-->
+        <!--<constructor-arg value="logfile.txt"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="cacheFileEventLogger" class="myapp.CacheFileEventLogger" destroy-method="destroy" parent="fileEventLogger" >-->
+        <!--&lt;!&ndash; автоматически берется из родителя благодаря атрибуту parent &ndash;&gt;-->
+        <!--&lt;!&ndash;<constructor-arg   value="logfile.txt"/>   &ndash;&gt;-->
+        <!--<constructor-arg   value="5" />-->
+    <!--</bean>-->
+
+
+
+</beans>
